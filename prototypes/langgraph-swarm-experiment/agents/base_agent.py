@@ -1,6 +1,6 @@
-# Base class for swarm agents
+# Base Agent class with common functionality
 
-from typing import TypedDict
+from typing import Any
 
 
 class BaseAgent:
@@ -9,9 +9,12 @@ class BaseAgent:
         self.role = role
 
     def run(self, state: dict) -> dict:
-        """Process current state and return updates."""
+        """Main execution method. Should be overridden by subclasses."""
         raise NotImplementedError("Subclasses must implement run()")
 
     def decide_handoff(self, state: dict) -> str:
-        """Decide which agent to hand off to next (or END)."""
+        """Return the name of the next agent or 'end'."""
         raise NotImplementedError("Subclasses must implement decide_handoff()")
+
+    def log(self, message: str):
+        print(f"[{self.name}] {message}")
