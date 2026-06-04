@@ -35,14 +35,6 @@ Build a lightweight but powerful **AI Agent Swarm Layer** that runs on top of (o
 - Seamless integration with QNET / blockchain layers for coordination incentives
 - Support for immersive roleplay / creative agent swarms
 
-## Potential Impact
-
-- Dramatically more resilient and intelligent mesh networks
-- New class of decentralized AI applications
-- Strong differentiation for HyperHyperspace as a platform
-- Foundation for advanced prototypes (Grok Launcher extensions, Soilnova/Vista Nova style systems)
-- Opens doors to research, open-source collaboration, and potential commercial applications
-
 ## Architectural Considerations
 
 ### Recommended Patterns for HyperHyperspace Integration
@@ -92,16 +84,34 @@ Key frameworks showing strong results in 2026 include LangGraph (for stateful, o
 
 ## Next Steps
 
-- [ ] Define minimal viable swarm protocol / message format aligned with hyperspace addressing
-- [ ] Prototype a minimal 3–5 agent swarm (e.g. using LangGraph or OpenAI Agents SDK) in a simulated mesh environment
-- [ ] Test multi-agent coordination under network partition and recovery scenarios
-- [ ] Explore integration points with Yggdrasil and Tenda hardware
-- [ ] Investigate lightweight inference options suitable for edge nodes
-- [ ] Document architecture decisions in `docs/decision-log.md`
-- [ ] Create follow-up idea: "Lightweight Agent Runtime for Mesh Nodes"
+### Phase 1: Foundation & Simulation (Short-term)
+- [ ] Define minimal viable swarm protocol / message format aligned with hyperspace addressing (JSON schema + semantic routing conventions)
+- [ ] Set up a simulated mesh environment (Docker + Yggdrasil or custom simulator) for testing
+- [ ] Prototype a minimal 3–5 agent swarm using **LangGraph** (or OpenAI Agents SDK) in the simulator:
+  - Agent roles: Network Monitor, Optimizer, Security Agent
+  - Implement basic dynamic handoff + shared blackboard
+  - Test under normal conditions and simulated network partitions
+- [ ] Document learnings in `docs/decision-log.md` and this idea file
+
+### Phase 2: Lightweight Runtime Exploration (Medium-term)
+- [ ] Research and prototype lightweight agent execution options suitable for edge/mesh nodes:
+  - Tool-calling only agents (minimal LLM calls)
+  - Distilled/small models (e.g. Phi-3, Gemma-2B, or quantized models)
+  - Hybrid symbolic + LLM agents
+- [ ] Evaluate resource usage (CPU, memory, latency) on representative hardware (Raspberry Pi or similar)
+- [ ] Design a minimal runtime interface that could eventually integrate with Grok Launcher or native mesh node software
+
+### Phase 3: Integration & Emergence Experiments (Longer-term)
+- [ ] Test multi-agent coordination under realistic failure scenarios (node churn, partitions, latency spikes)
+- [ ] Explore integration points with Yggdrasil, Tenda hardware, and QNET layers
+- [ ] Run controlled experiments on emergent behaviors (division of labor, self-optimization, collective decision making)
+- [ ] Investigate emotional/contextual awareness integration (link to Ara-style models)
+- [ ] Define success metrics for swarm performance in a mesh context
 
 ## Notes & Evolution
 
 **2026-06-04** — Initial capture. Strongly connected to ongoing HyperHyperspace repository work. This feels like a natural and high-leverage extension.
 
 **2026-06-04** — Expanded with Architectural Considerations and Research Insights sections based on current state of LLM agent swarm research and frameworks.
+
+**2026-06-04** — Next Steps expanded into phased experiment roadmap with concrete prototyping tasks.
