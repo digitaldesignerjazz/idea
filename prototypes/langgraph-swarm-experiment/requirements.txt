@@ -1,3 +1,4 @@
 langgraph>=0.2.0
 langchain-core
 pydantic
+langgraph-checkpoint-sqlite
