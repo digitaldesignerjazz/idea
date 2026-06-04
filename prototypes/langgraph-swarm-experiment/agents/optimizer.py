@@ -1,4 +1,4 @@
-# Optimizer Agent - Concrete implementation
+# Optimizer Agent - Enhanced blackboard integration
 
 from agents.base_agent import BaseAgent
 
@@ -8,21 +8,33 @@ class Optimizer(BaseAgent):
         super().__init__(name="optimizer", role="Network Optimizer")
 
     def run(self, state: dict) -> dict:
-        print(f"[{self.name}] Running optimization on mesh routes...")
+        print(f"[{self.name}] Optimizing mesh routes...")
         
-        messages = state.get("messages", [])
         blackboard = state.get("blackboard", {})
-        
-        # Simulate optimization work
-        optimization_result = "Applied route optimization: reduced average latency by ~15%"
-        
-        new_messages = messages + [f"{self.name}: {optimization_result}"]
-        blackboard["last_optimization"] = optimization_result
-        
-        # Update mesh conditions to reflect improvement
+        messages = state.get("messages", [])
         conditions = state.get("mesh_conditions", {}).copy()
+        
+        # Read from blackboard what the monitor found
+        last_analysis = blackboard.get("last_analysis", "No previous analysis")
+        print(f"  -> Using monitor data: {last_analysis}")
+        
+        # Simulate intelligent optimization
+        improvement = min(conditions.get("latency", 50) * 0.2, 25)
+        new_latency = max(conditions.get("latency", 50) - improvement, 15)
+        
+        conditions["latency"] = round(new_latency)
         conditions["needs_optimization"] = False
-        conditions["latency"] = max(conditions.get("latency", 50) - 10, 20)
+        
+        optimization_note = f"Reduced latency from {conditions.get('latency', 0) + improvement:.0f}ms to {new_latency}ms"
+        
+        blackboard["last_optimization"] = optimization_note
+        
+        # Log event
+        events = blackboard.get("recent_events", [])
+        events.append(f"Optimizer: {optimization_note}")
+        blackboard["recent_events"] = events[-5:]
+        
+        new_messages = messages + [f"{self.name}: {optimization_note}"]
         
         return {
             "messages": new_messages,
@@ -30,6 +42,3 @@ class Optimizer(BaseAgent):
             "mesh_conditions": conditions,
             "current_agent": self.name
         }
-
-    def decide_handoff(self, state: dict) -> str:
-        return "end"

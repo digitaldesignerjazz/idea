@@ -1,5 +1,5 @@
-# LangGraph Swarm Experiment - Phase 1
-# Concrete starter implementation with dynamic handoffs and shared blackboard
+# LangGraph Swarm Experiment - Phase 1 (Enhanced)
+# Features: Dynamic handoff, shared blackboard, basic mesh simulation
 
 from typing import TypedDict, Annotated, Literal
 from langgraph.graph import StateGraph, END
@@ -20,31 +20,36 @@ class SwarmState(TypedDict):
 
 
 def create_swarm_graph():
-    """Build the LangGraph for the agent swarm with conditional handoffs."""
     workflow = StateGraph(SwarmState)
 
-    # Instantiate agents
     monitor = NetworkMonitor()
     optimizer = Optimizer()
     security = SecurityAgent()
 
-    # Add nodes
     workflow.add_node("network_monitor", monitor.run)
     workflow.add_node("optimizer", optimizer.run)
     workflow.add_node("security_agent", security.run)
 
-    # Conditional handoff logic
     def decide_next_agent(state: SwarmState) -> Literal["optimizer", "security_agent", "end"]:
         conditions = state.get("mesh_conditions", {})
-        
-        if conditions.get("needs_optimization", False):
-            return "optimizer"
-        elif conditions.get("security_alert", False):
-            return "security_agent"
-        else:
-            return "end"
+        blackboard = state.get("blackboard", {})
 
-    # Add conditional edges from network_monitor
+        # Expanded handoff logic with multiple conditions
+        if conditions.get("security_alert", False):
+            return "security_agent"
+        
+        # High latency or packet loss triggers optimizer
+        if (conditions.get("latency", 0) > 80 or 
+            conditions.get("packet_loss", 0) > 5 or
+            blackboard.get("optimization_needed", False)):
+            return "optimizer"
+        
+        # If recent security issue was found
+        if blackboard.get("last_security_check") and "anomaly" in str(blackboard.get("last_security_check", "")).lower():
+            return "security_agent"
+        
+        return "end"
+
     workflow.add_conditional_edges(
         "network_monitor",
         decide_next_agent,
@@ -55,49 +60,45 @@ def create_swarm_graph():
         }
     )
 
-    # Simple edges from other agents back to end for this minimal example
     workflow.add_edge("optimizer", END)
     workflow.add_edge("security_agent", END)
 
-    # Set entry point
     workflow.set_entry_point("network_monitor")
-
-    # Compile
-    app = workflow.compile()
-    return app
+    return workflow.compile()
 
 
-def run_example():
-    """Run a simple example of the swarm."""
-    print("=== LangGraph Swarm Experiment - Phase 1 ===\n")
+def run_enhanced_example():
+    print("=== Enhanced LangGraph Swarm Experiment ===\n")
     
     app = create_swarm_graph()
     
-    # Initial state
+    # More realistic initial conditions
     initial_state: SwarmState = {
         "messages": [],
-        "blackboard": {},
+        "blackboard": {
+            "optimization_needed": False,
+            "recent_events": []
+        },
         "current_agent": "",
         "mesh_conditions": {
-            "needs_optimization": True,   # Trigger optimizer
+            "latency": 95,           # High -> should trigger optimizer
+            "packet_loss": 3,
             "security_alert": False,
-            "latency": 45,
-            "packet_loss": 2
+            "node_count": 12
         },
-        "task_context": {"task": "optimize_mesh"},
+        "task_context": {"task": "maintain_mesh_health"},
         "handoff_history": []
     }
     
-    # Run the graph
     result = app.invoke(initial_state)
     
-    print("\n=== Final State ===")
-    print(f"Messages: {result.get('messages', [])}")
-    print(f"Final agent: {result.get('current_agent')}")
+    print("\n=== Execution Complete ===")
+    print(f"Total messages: {len(result.get('messages', []))}")
+    print(f"Final blackboard: {result.get('blackboard')}")
     print(f"Handoff history: {result.get('handoff_history', [])}")
     
     return result
 
 
 if __name__ == "__main__":
-    run_example()
+    run_enhanced_example()
