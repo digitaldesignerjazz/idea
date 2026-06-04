@@ -14,9 +14,10 @@ This repository serves as a central, version-controlled space to:
 ## 📂 How to Use This Repository
 
 ### Adding a New Idea
-1. Create a new file in `ideas/` (e.g. `ideas/hyperspace-mesh-v2.md` or `ideas/ai-emotional-agents.md`)
-2. Use the provided template below
-3. Commit with a clear message: `feat(idea): add [short name]`
+1. Copy the template from `templates/idea-template.md`
+2. Create a new file in `ideas/` using kebab-case naming (e.g. `ideas/my-new-concept.md`)
+3. Fill in the template
+4. Commit with a clear message: `feat(idea): add [short name]`
 
 ### Idea Lifecycle
 - **Raw** → Initial capture
@@ -25,78 +26,35 @@ This repository serves as a central, version-controlled space to:
 - **Mature** → Stable / ready for integration
 - **Archived** → Completed, rejected, or superseded (move to `archive/`)
 
-## 📝 Idea Template
+### Current Ideas
 
-```markdown
-# [Idea Title]
+- [HyperHyperspace AI Agent Swarm Layer](ideas/hyperhyperspace-ai-agent-swarm-layer.md) — Exploring
 
-**Status**: Raw | Exploring | Active | Mature | Archived
-**Category**: Networking | AI/Agents | Blockchain | Hardware | Creative | Business | Other
-**Created**: YYYY-MM-DD
-**Last Updated**: YYYY-MM-DD
-
-## Summary
-One-sentence description of the core idea.
-
-## Problem / Opportunity
-What pain point or possibility does this address?
-
-## Proposed Solution / Approach
-High-level description of how it could work.
-
-## Key Features / Differentiators
-
-## Potential Impact
-Technical, business, user, or ecosystem impact.
-
-## Open Questions & Risks
-
-## Related Ideas / Dependencies
-Links to other ideas or existing projects (e.g. hyperhyperspace, QNET, xMesh)
-
-## Next Steps
-- [ ] Research
-- [ ] Prototype
-- [ ] Validate
-- [ ] Document
-
-## Notes & Evolution
-Log significant updates, pivots, or insights here.
-```
-
-## 📁 Repository Structure (Recommended)
+## 📁 Repository Structure
 
 ```
 idea/
 ├── README.md
 ├── .gitignore
-├── ideas/                 # Individual idea documents
+├── ideas/                 # Active idea documents
 ├── archive/               # Completed or retired ideas
 ├── templates/             # Reusable templates & frameworks
-├── research/              # Supporting notes, papers, links
-├── prototypes/            # Early code experiments tied to ideas
-└── docs/                  # Process, methodology, decision logs
+├── research/              # Supporting notes & references
+├── prototypes/            # Early experiments
+├── docs/                  # Decision logs, process docs
+└── .github/               # (optional) workflows, issue templates
 ```
 
-## 🔍 Categories (Suggested Tags)
-- `networking` / `mesh` / `hyperspace`
-- `ai-agents` / `swarms` / `emotional-ai`
-- `blockchain` / `qnet` / `xcoin`
-- `hardware` / `prototyping`
-- `privacy` / `decentralization`
-- `creative` / `worldbuilding` / `roleplay`
-- `business` / `venture` / `strategy`
+## 🔍 Suggested Categories
+
+`networking` `mesh` `hyperspace` `ai-agents` `swarms` `emotional-ai` `blockchain` `qnet` `xcoin` `hardware` `prototyping` `privacy` `decentralization` `creative` `worldbuilding` `roleplay` `business` `venture` `strategy`
 
 ## 🤝 Contributing
-Ideas can be added by anyone with access. Please:
-- Keep entries focused and actionable
-- Update status and notes regularly
-- Link related ideas
-- Use clear, descriptive filenames
+Ideas can be added by anyone with access. Please keep entries focused, update status regularly, and link related ideas.
 
 ## 💎 Philosophy
 Great ideas often start raw and evolve through iteration, conversation, and prototyping. This repo exists to give them a persistent home and traceable history.
 
 ---
 
-*Initialized on 2026-06-04*
+*Initialized and structured on 2026-06-04*
