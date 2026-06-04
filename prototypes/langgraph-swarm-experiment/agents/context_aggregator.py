@@ -1,4 +1,4 @@
-# Context Aggregator Agent - Summarizes swarm activity
+# Context Aggregator Agent
 
 from agents.base_agent import BaseAgent
 
@@ -8,22 +8,20 @@ class ContextAggregator(BaseAgent):
         super().__init__(name="context_aggregator", role="Context Aggregator")
 
     def run(self, state: dict) -> dict:
-        print(f"[{self.name}] Aggregating swarm context and insights...")
+        print(f"[{self.name}] Aggregating swarm activity...")
         
         blackboard = state.get("blackboard", {})
         messages = state.get("messages", [])
         
         events = blackboard.get("recent_events", [])
+        iteration = state.get("iteration_count", 0)
         
-        # Create a summary of recent activity
+        summary = f"Round {iteration}: Processed {len(events)} events."
+        
         if events:
-            summary = f"Processed {len(events)} recent events. " \
-                      f"Key activities: {', '.join(events[-2:])}"
-        else:
-            summary = "No significant events recorded yet."
+            summary += f" Recent: {events[-1]}"
         
         blackboard["context_summary"] = summary
-        blackboard["last_aggregation"] = summary
         
         new_messages = messages + [f"{self.name}: {summary}"]
         

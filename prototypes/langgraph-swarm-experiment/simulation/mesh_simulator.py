@@ -1,48 +1,60 @@
-# Simple Mesh Network Simulator
+# Improved Mesh Simulator with Events and Failures
 
 import random
 
 
 class MeshSimulator:
-    """Simple simulator for mesh network conditions."""
-    
     def __init__(self):
         self.base_latency = 45
         self.base_packet_loss = 1.5
         self.node_count = 12
+        self.failed_nodes = set()
         
     def get_current_conditions(self) -> dict:
         """Return current simulated mesh conditions."""
-        # Add some randomness to make it realistic
-        latency = self.base_latency + random.randint(-10, 35)
-        packet_loss = max(0, self.base_packet_loss + random.uniform(-0.5, 2.5))
+        latency = self.base_latency + random.randint(-8, 40)
+        packet_loss = max(0, self.base_packet_loss + random.uniform(-0.3, 3.0))
+        
+        # Account for failed nodes
+        effective_nodes = self.node_count - len(self.failed_nodes)
         
         return {
             "latency": round(latency),
             "packet_loss": round(packet_loss, 1),
-            "security_alert": random.random() < 0.15,  # 15% chance
-            "node_count": self.node_count,
+            "security_alert": random.random() < 0.12,
+            "node_count": effective_nodes,
+            "failed_nodes": len(self.failed_nodes),
             "timestamp": "simulated"
         }
     
     def simulate_event(self) -> dict:
-        """Simulate a network event (congestion, node failure, etc)."""
-        event_type = random.choice(["congestion", "node_failure", "normal"])
+        """Simulate network events including failures."""
+        roll = random.random()
         
-        if event_type == "congestion":
+        if roll < 0.15:  # Node failure
+            if self.node_count - len(self.failed_nodes) > 3:
+                node_id = f"node-{random.randint(1, self.node_count):02d}"
+                self.failed_nodes.add(node_id)
+                return {
+                    "type": "node_failure",
+                    "node": node_id,
+                    "description": f"Node {node_id} became unreachable"
+                }
+        elif roll < 0.35:  # Congestion
             return {
                 "type": "congestion",
-                "latency_increase": random.randint(20, 50),
-                "description": "Network congestion detected"
-            }
-        elif event_type == "node_failure":
-            return {
-                "type": "node_failure",
-                "affected_nodes": random.randint(1, 3),
-                "description": "Node(s) became unreachable"
+                "latency_increase": random.randint(15, 45),
+                "description": "Sudden congestion detected"
             }
         else:
             return {
                 "type": "normal",
-                "description": "Network operating normally"
+                "description": "Network conditions stable"
             }
+    
+    def recover_node(self):
+        """Simulate node recovery."""
+        if self.failed_nodes:
+            recovered = self.failed_nodes.pop()
+            return {"type": "recovery", "node": recovered}
+        return None

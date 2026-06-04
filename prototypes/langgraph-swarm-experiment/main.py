@@ -1,4 +1,5 @@
-# LangGraph Swarm Experiment - With Persistence + Mesh Simulator
+# Advanced LangGraph Swarm Example with Cyclic Behavior
+# Supports multiple handoff rounds and loops between agents
 
 from typing import TypedDict, Annotated, Literal
 from langgraph.graph import StateGraph, END
@@ -21,10 +22,11 @@ class SwarmState(TypedDict):
     mesh_conditions: dict
     task_context: dict
     handoff_history: list[str]
-    thread_id: str   # For persistence
+    iteration_count: int
+    thread_id: str
 
 
-def create_swarm_graph(checkpointer=None):
+def create_advanced_swarm_graph(checkpointer=None):
     workflow = StateGraph(SwarmState)
 
     monitor = NetworkMonitor()
@@ -40,18 +42,28 @@ def create_swarm_graph(checkpointer=None):
     def decide_next_agent(state: SwarmState) -> str:
         conditions = state.get("mesh_conditions", {})
         blackboard = state.get("blackboard", {})
+        iteration = state.get("iteration_count", 0)
 
+        # Safety limit to prevent infinite loops
+        if iteration >= 6:
+            return "end"
+
+        # Priority routing
         if conditions.get("security_alert", False):
             return "security_agent"
         
-        if (conditions.get("latency", 0) > 80 or 
-            conditions.get("packet_loss", 0) > 5 or
+        if (conditions.get("latency", 0) > 75 or 
+            conditions.get("packet_loss", 0) > 4 or
             blackboard.get("optimization_needed", False)):
             return "optimizer"
         
-        # Occasionally aggregate context
-        if len(blackboard.get("recent_events", [])) >= 3:
+        # After several events, aggregate context
+        if len(blackboard.get("recent_events", [])) >= 2 and iteration % 2 == 0:
             return "context_aggregator"
+        
+        # Occasionally re-monitor (creates loop potential)
+        if iteration > 0 and iteration % 3 == 0:
+            return "network_monitor"
         
         return "end"
 
@@ -66,9 +78,11 @@ def create_swarm_graph(checkpointer=None):
         }
     )
 
-    workflow.add_edge("optimizer", END)
+    # Allow some agents to loop back to monitoring for multiple rounds
+    workflow.add_edge("optimizer", "network_monitor")   # Optimizer -> Monitor (loop)
+    workflow.add_edge("context_aggregator", "network_monitor")  # Aggregator -> Monitor
+
     workflow.add_edge("security_agent", END)
-    workflow.add_edge("context_aggregator", END)
 
     workflow.set_entry_point("network_monitor")
     
@@ -77,17 +91,13 @@ def create_swarm_graph(checkpointer=None):
     return workflow.compile()
 
 
-def run_with_persistence():
-    print("=== LangGraph Swarm with Persistence & Simulator ===\n")
+def run_advanced_example():
+    print("=== Advanced Cyclic LangGraph Swarm ===\n")
     
-    # Create checkpointer for persistence
     checkpointer = MemorySaver()
+    app = create_advanced_swarm_graph(checkpointer=checkpointer)
     
-    app = create_swarm_graph(checkpointer=checkpointer)
-    
-    # Use thread_id for conversation/session persistence
-    config = {"configurable": {"thread_id": "mesh-swarm-001"}}
-    
+    config = {"configurable": {"thread_id": "advanced-swarm-001"}}
     simulator = MeshSimulator()
     
     initial_state: SwarmState = {
@@ -98,24 +108,21 @@ def run_with_persistence():
         },
         "current_agent": "",
         "mesh_conditions": simulator.get_current_conditions(),
-        "task_context": {"task": "maintain_mesh_health"},
+        "task_context": {"task": "continuous_mesh_maintenance"},
         "handoff_history": [],
-        "thread_id": "mesh-swarm-001"
+        "iteration_count": 0,
+        "thread_id": "advanced-swarm-001"
     }
     
     result = app.invoke(initial_state, config=config)
     
-    print("\n=== Run Complete ===")
-    print(f"Messages: {len(result.get('messages', []))}")
-    print(f"Blackboard keys: {list(result.get('blackboard', {}).keys())}")
-    
-    # Demonstrate persistence - get state from checkpointer
-    print("\n--- Persistence Check ---")
-    saved_state = app.get_state(config)
-    print(f"State can be resumed from thread_id: mesh-swarm-001")
+    print("\n=== Advanced Run Complete ===")
+    print(f"Total messages: {len(result.get('messages', []))}")
+    print(f"Iterations completed: {result.get('iteration_count', 0)}")
+    print(f"Final blackboard keys: {list(result.get('blackboard', {}).keys())}")
     
     return result
 
 
 if __name__ == "__main__":
-    run_with_persistence()
+    run_advanced_example()
